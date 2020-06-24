@@ -1,4 +1,4 @@
-_rest server en Heroku y Github._
+_Rest server en Heroku y Github._
 
 ## Comenzando 🚀
 
@@ -25,7 +25,7 @@ npm start
 ```
   - _Enlace en Heroku._
 ```
-Colocar enlace
+https://lsoriac-rest-server.herokuapp.com/
 ```
 
 ## Construido con 🛠️
