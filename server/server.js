@@ -1,15 +1,18 @@
 //importación de módulos
 require('./config/config')
 const express = require('express')
-    //módulo para manejar la bd
+
+//módulo para manejar la bd
 const mongoose = require('mongoose');
 const app = express()
-    //instalamos 
+
+//instalamos 
 const bodyParser = require('body-parser')
-    //MidleWare -  capa intermedia entre el servidor y las peticiones que llegan
-    //datos a través de la web deben estar codificados
-    //se ejecuta cada vez que se haga una solicitud al servidor
-    // parse application/x-www-form-urlencoded
+
+//MiddleWare -  capa intermedia entre el servidor y las peticiones que llegan
+//datos a través de la web deben estar codificados
+//se ejecuta cada vez que se haga una solicitud al servidor
+// parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
 
 // parse application/json
@@ -19,7 +22,7 @@ app.use(bodyParser.json())
 app.use(require('../routes/usuario'))
 
 //conexión con Mongo db
-mongoose.connect('mongodb://localhost:27017/cafe', {
+mongoose.connect(process.env.urlBD, {
     useCreateIndex: true,
     useNewUrlParser: true,
     useUnifiedTopology: true

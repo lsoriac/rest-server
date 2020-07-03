@@ -1,9 +1,36 @@
 const express = require('express')
 const bcrypt = require('bcrypt')
+const _ = require('underscore')
 const app = express()
 const Usuario = require('../models/usuario');
+
 app.get('/usuario', (req, res) => {
-    res.json('get Usuario')
+    let desde = req.query.desde || 0;
+    //res.json('get Usuario')
+    desde = Number(desde)
+    let limite = req.query.limite || 5;
+    limite = Number(limite)
+    Usuario.find({ estado: true }, 'nombre email role estado google img') //////////////ojo esto del filtro
+        //.skip(5) // se salta los primeros 5 registros y muestra los 5 siguientes
+        .skip(desde)
+        .limit(limite)
+        .exec((err, usuarios) => {
+            if (err) {
+                //Error que está incorrecta la petición
+                return res.status(400).json({
+                    ok: false,
+                    err
+                })
+            }
+            //Obtengo el número de documentos que tengo
+            Usuario.countDocuments({ estado: true }, (err, conteo) => {
+                res.json({
+                    ok: true,
+                    usuarios,
+                    numero: conteo
+                })
+            })
+        })
 });
 
 app.post('/usuario', (req, res) => {
@@ -29,23 +56,76 @@ app.post('/usuario', (req, res) => {
             })
         }
         res.json({
-            ok: true,
-            usuario: usuariodb
-        })
-        usuario.password = null
+                //no es necesario enviar código 200
+                ok: true,
+                usuario: usuariodb
+            })
+            // usuario.password = null
     })
 });
 
 //ruta
 app.put('/usuario/:id', (req, res) => {
     let id = req.params.id;
-    res.json({
-        //id:id
-        id
-    })
+    //let body = req.body;
+    //opción optimizada con el módulo underscore
+    let body = _.pick(req.body, ['nombre', 'email', 'img', 'role', 'estado']);
+    //Se elimnan los parámetros que no quiero que se puden modificar mediante el PUT
+    //Opcion funcional pero ineficiente según la documentación
+    //delete body.password;
+    //delete body.password;
+    Usuario.findByIdAndUpdate(id, body, {
+            new: true,
+            runValidators: true,
+            context: 'query'
+        },
+        (err, usuariodb) => {
+            if (err) {
+                return res.status(400).json({
+                    ok: false,
+                    err
+                })
+            }
+            //en el caso que si encuentre
+            res.json({
+                ok: true,
+                usuario: usuariodb
+            })
+            console.log(usuariodb)
+        })
 });
 
-app.delete('/usuario', (req, res) => {
-    res.json('Delete Usuario')
+app.delete('/usuario/:id', (req, res) => {
+    let id = req.params.id;
+    let cambiarEstado = {
+        estado: false
+    }
+    Usuario.findByIdAndUpdate(id, cambiarEstado, {
+            new: true,
+            context: 'query',
+            useFindAndModify: false
+        },
+        (err, usuariodb) => {
+            if (err) {
+                return res.status(400).json({
+                    ok: false,
+                    err
+                })
+            }
+            if (!usuariodb) {
+                res.json({
+                    ok: false,
+                    err: {
+                        message: 'Usuario no encontrado'
+                    }
+                })
+            } else {
+                res.json({
+                    ok: true,
+                    message: usuariodb
+                })
+            }
+        })
 });
+
 module.exports = app
