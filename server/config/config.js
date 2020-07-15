@@ -38,6 +38,6 @@
        urlBD = 'mongodb://localhost:27017/cafe'
 
    } else {
-       urlBD = process.env.urlBD_Mongo
+       urlBD = 'mongodb+srv://cafe_user:cafe_user123@cluster0.qartq.mongodb.net/cafe'
    }
    process.env.urlBD = urlBD
