@@ -9,7 +9,7 @@ const Usuario = require('../models/usuario');
 
 app.post('/login', (req, res) => {
     let body = req.body;
-    Usuario.findOne({}, (err, usuarioDB) => {
+    Usuario.findOne({ email: body.email }, (err, usuarioDB) => {
         //si existe un error en la BD u otra cosa en el servidor
         if (err) {
             //Error que está incorrecta la petición err 500
@@ -28,7 +28,7 @@ app.post('/login', (req, res) => {
             })
         }
         //verificar si las contraseñas coinciden
-        if (bcrypt.compareSync(body.password, usuarioDB.password)) {
+        if (!bcrypt.compareSync(body.password, usuarioDB.password)) {
             return res.status(400).json({
                 ok: false,
                 err: {

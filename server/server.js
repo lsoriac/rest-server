@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
-//incluir las rutas de usuario
+//incluir las rutas de usuario //incluir la configuración global de las rutas 
 app.use(require('../routes/index'))
 
 //conexión con Mongo db
