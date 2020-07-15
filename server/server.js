@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 //incluir las rutas de usuario
-app.use(require('../routes/usuario'))
+app.use(require('../routes/index'))
 
 //conexión con Mongo db
 mongoose.connect(process.env.urlBD, {
