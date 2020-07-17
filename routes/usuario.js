@@ -3,8 +3,19 @@ const bcrypt = require('bcrypt')
 const _ = require('underscore')
 const app = express()
 const Usuario = require('../models/usuario');
+const { verificarToken, verificarAdminRole } = require('../server/middlewares/autenticacion')
 
-app.get('/usuario', (req, res) => {
+//aqui uso la nueva función
+app.get('/usuario', verificarToken, (req, res) => {
+    /*
+        //verificar que la información del payload es correcta
+        return res.json({
+            //req.usuario = decoded.usuario de autenticacion
+            usuario: req.usuario,
+            nombre: req.usuario.nombre,
+            email: req.usuario.email
+        })*/
+
     let desde = req.query.desde || 0;
     //res.json('get Usuario')
     desde = Number(desde)
@@ -33,7 +44,8 @@ app.get('/usuario', (req, res) => {
         })
 });
 
-app.post('/usuario', (req, res) => {
+//array de middlewares (el orden si importa ojo)
+app.post('/usuario', [verificarToken, verificarAdminRole], (req, res) => {
 
     //obtener todo lo que venga en la petición
     let body = req.body
@@ -65,7 +77,7 @@ app.post('/usuario', (req, res) => {
 });
 
 //ruta
-app.put('/usuario/:id', (req, res) => {
+app.put('/usuario/:id', [verificarToken, verificarAdminRole], (req, res) => {
     let id = req.params.id;
     //let body = req.body;
     //opción optimizada con el módulo underscore
@@ -95,7 +107,7 @@ app.put('/usuario/:id', (req, res) => {
         })
 });
 
-app.delete('/usuario/:id', (req, res) => {
+app.delete('/usuario/:id', [verificarToken, verificarAdminRole], (req, res) => {
     let id = req.params.id;
     let cambiarEstado = {
         estado: false
